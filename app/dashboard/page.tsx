@@ -11,6 +11,42 @@ interface Customer {
   lastPurchase: string;
 }
 
+// Mock database stored in memory
+let mockCustomersDB: Customer[] = [
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john@example.com',
+    amount: 1250,
+    status: 'active',
+    lastPurchase: '2023-05-15'
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    amount: 850,
+    status: 'pending',
+    lastPurchase: '2023-06-20'
+  },
+  {
+    id: 3,
+    name: 'Robert Johnson',
+    email: 'robert@example.com',
+    amount: 2200,
+    status: 'active',
+    lastPurchase: '2023-04-10'
+  },
+  {
+    id: 4,
+    name: 'Emily Davis',
+    email: 'emily@example.com',
+    amount: 450,
+    status: 'inactive',
+    lastPurchase: '2023-01-30'
+  },
+];
+
 export default function DashboardPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,15 +60,14 @@ export default function DashboardPage() {
     lastPurchase: new Date().toISOString().split('T')[0]
   });
 
-  // Fetch customers from API
+  // Fetch customers from mock database
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
         setLoading(true);
-        // Replace with your actual API endpoint
-        const response = await fetch('/api/customers');
-        const data = await response.json();
-        setCustomers(data);
+        // Simulate API call with delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setCustomers([...mockCustomersDB]);
       } catch (error) {
         console.error('Error fetching customers:', error);
       } finally {
@@ -45,48 +80,55 @@ export default function DashboardPage() {
 
   // Add new customer
   const handleAddCustomer = async () => {
-    try {
-      const response = await fetch('/api/customers', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newCustomer),
-      });
+    if (!newCustomer.name || !newCustomer.email) return;
 
-      if (response.ok) {
-        const addedCustomer = await response.json();
-        setCustomers([...customers, addedCustomer]);
-        setShowAddForm(false);
-        setNewCustomer({
-          name: '',
-          email: '',
-          amount: 0,
-          status: 'active',
-          lastPurchase: new Date().toISOString().split('T')[0]
-        });
-      }
+    try {
+      setLoading(true);
+      // Simulate API call with delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const customerToAdd = {
+        ...newCustomer,
+        id: Math.max(0, ...mockCustomersDB.map(c => c.id)) + 1,
+        lastPurchase: new Date().toISOString().split('T')[0]
+      };
+      
+      // Update mock database
+      mockCustomersDB.push(customerToAdd);
+      
+      // Update state
+      setCustomers([...mockCustomersDB]);
+      setShowAddForm(false);
+      setNewCustomer({
+        name: '',
+        email: '',
+        amount: 0,
+        status: 'active',
+        lastPurchase: new Date().toISOString().split('T')[0]
+      });
     } catch (error) {
       console.error('Error adding customer:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   // Update customer status
   const updateCustomerStatus = async (id: number, newStatus: 'active' | 'pending' | 'inactive') => {
     try {
-      const response = await fetch(`/api/customers/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (response.ok) {
-        setCustomers(customers.map(customer => 
-          customer.id === id ? { ...customer, status: newStatus } : customer
-        ));
+      // Simulate API call with delay
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Update mock database
+      const index = mockCustomersDB.findIndex(c => c.id === id);
+      if (index !== -1) {
+        mockCustomersDB[index].status = newStatus;
       }
+      
+      // Update state
+      setCustomers(customers.map(customer => 
+        customer.id === id ? { ...customer, status: newStatus } : customer
+      ));
     } catch (error) {
       console.error('Error updating customer status:', error);
     }
@@ -167,30 +209,35 @@ export default function DashboardPage() {
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Customer</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                   <input
                     type="text"
                     value={newCustomer.name}
                     onChange={(e) => setNewCustomer({...newCustomer, name: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="Customer name"
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                   <input
                     type="email"
                     value={newCustomer.email}
                     onChange={(e) => setNewCustomer({...newCustomer, email: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="customer@example.com"
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount Spent</label>
                   <input
                     type="number"
-                    value={newCustomer.amount}
-                    onChange={(e) => setNewCustomer({...newCustomer, amount: Number(e.target.value)})}
+                    value={newCustomer.amount || ''}
+                    onChange={(e) => setNewCustomer({...newCustomer, amount: Number(e.target.value) || 0})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="0"
                   />
                 </div>
                 <div>
@@ -215,10 +262,10 @@ export default function DashboardPage() {
                 </button>
                 <button
                   onClick={handleAddCustomer}
-                  className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg"
+                  className={`px-4 py-2 rounded-lg ${!newCustomer.name || !newCustomer.email ? 'bg-gray-300 cursor-not-allowed' : 'bg-amber-600 hover:bg-amber-700 text-white'}`}
                   disabled={!newCustomer.name || !newCustomer.email}
                 >
-                  Add Customer
+                  {loading ? 'Adding...' : 'Add Customer'}
                 </button>
               </div>
             </div>
@@ -302,8 +349,23 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {/* Empty state */}
+          {!loading && filteredCustomers.length === 0 && (
+            <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+              <div className="text-amber-500 text-5xl mb-4">👤</div>
+              <h3 className="text-lg font-medium text-gray-800 mb-1">No customers found</h3>
+              <p className="text-gray-500 mb-4">There are no customers matching your current filters</p>
+              <button 
+                onClick={() => setActiveTab('all')}
+                className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg"
+              >
+                View all customers
+              </button>
+            </div>
+          )}
+
           {/* Stats summary */}
-          {!loading && (
+          {!loading && customers.length > 0 && (
             <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="bg-white p-4 rounded-xl shadow-sm border-t-4 border-emerald-400">
                 <p className="text-sm text-gray-500">Active Customers</p>
