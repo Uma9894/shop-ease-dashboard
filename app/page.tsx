@@ -4,7 +4,7 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default function HomePage() {
+export default function Page() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-100 to-white font-sans">
       {/* Navbar */}
@@ -61,18 +61,17 @@ export default function HomePage() {
           <Link
             href="/login"
             className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white px-6 py-3 rounded-lg font-semibold shadow-lg transition duration-300"
-            >
+          >
             <span>Login</span>
             <ArrowRightIcon className="w-5 h-5" />
           </Link>
-
         </div>
 
         {/* Right Image */}
         <div className="md:w-1/2 w-full flex justify-center">
           <Image
             src="/image1.png"
-            alt=""
+            alt="E-commerce Product"
             width={700}
             height={500}
             className="object-contain"
