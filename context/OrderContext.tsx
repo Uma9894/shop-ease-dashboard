@@ -3,11 +3,12 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { CartItem } from './CartContext';
 
-type Order = {
+export type Order = {
   id: string;
-  items: CartItem[];
   date: string;
-  status: 'pending' | 'processing' | 'completed';
+  items: CartItem[];
+  status: 'pending' | 'completed' | 'cancelled';
+  // Removed individual item properties since they're now in CartItem[]
 };
 
 type OrderContextType = {
@@ -25,7 +26,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       id: `order-${Date.now()}`,
       items,
       date: new Date().toISOString(),
-      status: 'pending'
+      status: 'pending',
+      // No need for individual item properties here
     };
     setOrders(prev => [...prev, newOrder]);
   };

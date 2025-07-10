@@ -1,15 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-  experimental: {
-    appDir: true, // Enable the /app directory if you're using it
-  },
   images: {
-    domains: ['yourdomain.com'], // Add external image domains if needed
+    domains: ['yourdomain.com'], // Replace with actual image domains if used
   },
   typescript: {
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: false, // Or true if you want to allow builds to succeed despite TS errors
   },
 };
 

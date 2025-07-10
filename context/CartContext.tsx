@@ -1,9 +1,8 @@
-// context/CartContext.tsx
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
 
-type CartItem = {
+export type CartItem = {
   id: string;
   name: string;
   image: string;
@@ -13,7 +12,7 @@ type CartItem = {
 
 type CartContextType = {
   cart: CartItem[];
-  addToCart: (product: Omit<CartItem, 'quantity'>) => void;
+  addToCart: (item: Omit<CartItem, 'quantity'>) => void;
   removeFromCart: (id: string) => void;
   clearCart: () => void;
 };
@@ -28,8 +27,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const existingItem = prev.find(item => item.id === product.id);
       if (existingItem) {
         return prev.map(item =>
-          item.id === product.id 
-            ? { ...item, quantity: item.quantity + 1 } 
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
