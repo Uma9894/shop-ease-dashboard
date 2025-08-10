@@ -4,14 +4,15 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import Image from 'next/image';
 import Head from 'next/head';
-import { Inter } from 'next/font/google'; // ✅ Font optimization
+import { Inter } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'] }); // ✅ Use modern font loading
+// ✅ Only load required font weights
+const inter = Inter({ subsets: ['latin'], weight: ['400', '700'] });
 
 export default function Page() {
   return (
     <>
-      {/* SEO */}
+      {/* SEO & Preloading */}
       <Head>
         <title>ShopEase - Discover Quality Products</title>
         <meta
@@ -19,7 +20,10 @@ export default function Page() {
           content="Your one-stop shop for gadgets, accessories, and home essentials. Experience smooth shopping and unbeatable deals."
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" /> 
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+
+        {/* ✅ Preload the hero image in WebP format */}
+        <link rel="preload" as="image" href="/image1.webp" />
       </Head>
 
       {/* Main Content */}
@@ -84,10 +88,10 @@ export default function Page() {
             </Link>
           </div>
 
-          {/* Right Image */}
+          {/* Right Image (Optimized WebP) */}
           <div className="md:w-1/2 w-full flex justify-center">
             <Image
-              src="/image1.png"
+              src="/image1.webp"
               alt="E-commerce Product"
               width={700}
               height={500}
