@@ -6,12 +6,8 @@ import Image from 'next/image';
 import Head from 'next/head';
 import { Inter } from 'next/font/google';
 
-// ✅ Load Inter font without blocking render
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  display: 'swap'
-});
+// ✅ Only load required font weights
+const inter = Inter({ subsets: ['latin'], weight: ['400', '700'] });
 
 export default function Page() {
   return (
@@ -25,10 +21,12 @@ export default function Page() {
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Preload smallest hero image for mobile */}
-        <link rel="preload" as="image" href="/image1-small.webp" />
+
+        {/* ✅ Preload the hero image in WebP format */}
+        <link rel="preload" as="image" href="/image1.webp" />
       </Head>
 
+      {/* Main Content */}
       <main className={`${inter.className} min-h-screen bg-gradient-to-br from-gray-100 to-white`}>
         {/* Navbar */}
         <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-md">
@@ -90,7 +88,7 @@ export default function Page() {
             </Link>
           </div>
 
-          {/* Right Image (Responsive + Blur Placeholder) */}
+          {/* Right Image (Optimized WebP) */}
           <div className="md:w-1/2 w-full flex justify-center">
             <Image
               src="/image1.webp"
@@ -98,10 +96,8 @@ export default function Page() {
               width={700}
               height={500}
               priority
-              placeholder="blur"
-              blurDataURL="/image1-small.webp"
               fetchPriority="high"
-              sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 50vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 70vw, 50vw"
               className="object-contain"
             />
           </div>
