@@ -4,10 +4,11 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import Image from 'next/image';
 import Head from 'next/head';
+import Script from 'next/script';
 import { Inter } from 'next/font/google';
 
 // ✅ Only load required font weights
-const inter = Inter({ subsets: ['latin'], weight: ['400', '700'] });
+const inter = Inter({ subsets: ['latin'], weight: ['400', '700'], display: 'swap' });
 
 export default function Page() {
   return (
@@ -22,9 +23,12 @@ export default function Page() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
-        {/* ✅ Preload the hero image in WebP format */}
-        <link rel="preload" as="image" href="/image1.webp" />
+        {/* ✅ Preload tiny hero image */}
+        <link rel="preload" as="image" href="/image1-tiny.webp" />
       </Head>
+
+      {/* Defer non-critical scripts */}
+      <Script src="/analytics.js" strategy="lazyOnload" />
 
       {/* Main Content */}
       <main className={`${inter.className} min-h-screen bg-gradient-to-br from-gray-100 to-white`}>
@@ -34,38 +38,24 @@ export default function Page() {
             ShopEase
           </div>
           <ul className="hidden md:flex gap-4 text-sm font-medium">
-            <li>
-              <Link
-                href="/"
-                className="px-4 py-2 rounded-full text-gray-700 hover:text-pink-600 hover:bg-pink-100 transition-colors duration-300"
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard"
-                className="px-4 py-2 rounded-full text-gray-700 hover:text-purple-600 hover:bg-purple-100 transition-colors duration-300"
-              >
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="#about"
-                className="px-4 py-2 rounded-full text-gray-700 hover:text-orange-500 hover:bg-orange-100 transition-colors duration-300"
-              >
-                About
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="#contact"
-                className="px-4 py-2 rounded-full text-gray-700 hover:text-blue-500 hover:bg-blue-100 transition-colors duration-300"
-              >
-                Contact
-              </Link>
-            </li>
+            {['Home', 'Dashboard', 'About', 'Contact'].map((item, idx) => (
+              <li key={idx}>
+                <Link
+                  href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
+                  className={`px-4 py-2 rounded-full text-gray-700 hover:bg-opacity-10 transition-colors duration-300 ${
+                    item === 'Home'
+                      ? 'hover:text-pink-600 hover:bg-pink-100'
+                      : item === 'Dashboard'
+                      ? 'hover:text-purple-600 hover:bg-purple-100'
+                      : item === 'About'
+                      ? 'hover:text-orange-500 hover:bg-orange-100'
+                      : 'hover:text-blue-500 hover:bg-blue-100'
+                  }`}
+                >
+                  {item}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
 
@@ -88,7 +78,7 @@ export default function Page() {
             </Link>
           </div>
 
-          {/* Right Image (Optimized WebP) */}
+          {/* Right Image (Tiny placeholder → full image) */}
           <div className="md:w-1/2 w-full flex justify-center">
             <Image
               src="/image1.webp"
@@ -96,7 +86,8 @@ export default function Page() {
               width={700}
               height={500}
               priority
-              fetchPriority="high"
+              placeholder="blur"
+              blurDataURL="/image1-tiny.webp"
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 70vw, 50vw"
               className="object-contain"
             />
